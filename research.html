@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Research Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f1f1f2;
+    --card:#ffffff;
+    --teal:#00bbd6;
+    --navy:#237194;
+    --accent:#faa32b;
+    --ink:#122a35;
+    --ink-soft:#3f5c68;
+    --line: rgba(35,113,148,0.18);
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  /* ===== Header ===== */
+  header.hero{
+    position:relative;
+    padding:88px 8vw 64px;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  header.hero::before{
+    content:"";
+    position:absolute; top:-120px; right:-120px;
+    width:340px; height:340px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--teal), transparent 70%);
+    opacity:.18;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px; height:1px; background:var(--navy);
+  }
+  h1.title{
+    font-family:'Newsreader', serif;
+    font-weight:500;
+    font-size:clamp(38px, 6vw, 68px);
+    line-height:1.02;
+    margin:18px 0 20px;
+    max-width:14ch;
+  }
+  h1.title em{
+    font-style:italic;
+    color:var(--navy);
+  }
+  p.lede{
+    font-size:17px;
+    line-height:1.6;
+    color:var(--ink-soft);
+    max-width:56ch;
+    margin:0 0 30px;
+  }
+  .legend{
+    display:flex; flex-wrap:wrap; gap:22px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .legend span{display:flex; align-items:center; gap:8px;}
+  .dot{width:9px; height:9px; border-radius:50%; display:inline-block;}
+
+  /* ===== nav rail (progress) ===== */
+  .rail-wrap{
+    position:fixed;
+    left:22px; top:50%; transform:translateY(-50%);
+    z-index:50;
+    display:none;
+  }
+  @media(min-width:1080px){ .rail-wrap{ display:block; } }
+  .rail{
+    display:flex; flex-direction:column; gap:9px;
+    padding:14px 10px;
+    background:rgba(255,255,255,.7);
+    backdrop-filter:blur(6px);
+    border-radius:20px;
+    border:1px solid var(--line);
+  }
+  .rail button{
+    width:9px; height:9px; border-radius:50%;
+    border:1.5px solid var(--navy);
+    background:transparent;
+    cursor:pointer;
+    padding:0;
+    transition:all .25s ease;
+  }
+  .rail button.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    transform:scale(1.35);
+  }
+
+  /* ===== Pipeline ===== */
+  main{
+    max-width:900px;
+    margin:0 auto;
+    padding:70px 8vw 120px;
+    position:relative;
+  }
+  .spine{
+    position:absolute;
+    left:calc(8vw + 27px);
+    top:70px; bottom:120px;
+    width:2px;
+    background:linear-gradient(var(--navy), var(--teal));
+    opacity:.25;
+  }
+  @media(max-width:700px){ .spine{ display:none; } }
+
+  section.step{
+    position:relative;
+    padding-left:70px;
+    margin-bottom:56px;
+    scroll-margin-top:40px;
+  }
+  @media(max-width:700px){ section.step{ padding-left:0; } }
+
+  .marker{
+    position:absolute;
+    left:0; top:2px;
+    width:56px; height:56px;
+    border-radius:50%;
+    background:var(--card);
+    border:2px solid var(--navy);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:14px;
+    color:var(--navy);
+    box-shadow:0 2px 0 var(--line);
+  }
+  @media(max-width:700px){ .marker{ position:static; margin-bottom:14px; } }
+
+  .step-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  h2.step-title{
+    font-family:'Newsreader', serif;
+    font-weight:500;
+    font-size:26px;
+    margin:0;
+  }
+  .duration{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:.04em;
+    color:#fff;
+    background:var(--accent);
+    padding:3px 10px;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+  ul.points{
+    margin:10px 0 0;
+    padding-left:18px;
+    color:var(--ink-soft);
+    font-size:15px;
+    line-height:1.65;
+  }
+  ul.points li{ margin-bottom:4px; }
+  ul.points li::marker{ color:var(--teal); }
+
+  /* tool chips */
+  .tools{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px,1fr));
+    gap:10px;
+  }
+  .tool-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--navy);
+    margin:22px 0 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .tool-label::after{
+    content:"";
+    flex:1; height:1px; background:var(--line);
+  }
+  a.tool-card{
+    display:block;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    text-decoration:none;
+    transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  a.tool-card:hover{
+    border-color:var(--teal);
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(0,187,214,.15);
+  }
+  .tool-name{
+    font-weight:600;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .tool-name .arrow{
+    color:var(--teal);
+    font-size:13px;
+    transition:transform .2s ease;
+  }
+  a.tool-card:hover .arrow{ transform:translate(2px,-2px); }
+  .tool-desc{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.45;
+    margin-top:4px;
+  }
+
+  /* end note */
+  footer{
+    max-width:900px;
+    margin:0 auto;
+    padding:0 8vw 90px;
+    color:var(--ink-soft);
+    font-size:13.5px;
+  }
+  footer a{ color:var(--navy); font-weight:600; }
+  .note-card{
+    border:1px dashed var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+    background:var(--card);
+  }
+</style>
+</head>
+<body>
+
+<div class="rail-wrap">
+  <div class="rail" id="rail"></div>
+</div>
+
+<header class="hero">
+  <div class="eyebrow">Question → Publication</div>
+  <h1 class="title">The research <em>pipeline</em>, mapped end to end</h1>
+  <p class="lede">Twelve stages from a raw idea to an accepted paper, with the tools that actually earn their place at each stage — not a link dump, a workflow.</p>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--navy)"></span> Stage marker</span>
+    <span><span class="dot" style="background:var(--accent)"></span> Time estimate</span>
+    <span><span class="dot" style="background:var(--teal)"></span> Tool link</span>
+  </div>
+</header>
+
+<main>
+  <div class="spine"></div>
+
+  <section class="step" id="s1">
+    <div class="marker">§01</div>
+    <div class="step-head">
+      <h2 class="step-title">Clarify the question</h2>
+      <span class="duration">1–3 days</span>
+    </div>
+    <ul class="points">
+      <li>Define one focused, answerable question — not a topic.</li>
+      <li>Check it's original: has someone already answered this?</li>
+    </ul>
+    <div class="tool-label">Quick scan</div>
+    <div class="tools">
+      <a class="tool-card" href="https://scholar.google.com/" target="_blank" rel="noopener">
+        <div class="tool-name">Google Scholar <span class="arrow">↗</span></div>
+        <div class="tool-desc">Free, broad index of papers, citations, and author profiles — first pass on any question.</div>
+      </a>
+      <a class="tool-card" href="https://www.semanticscholar.org/" target="_blank" rel="noopener">
+        <div class="tool-name">Semantic Scholar <span class="arrow">↗</span></div>
+        <div class="tool-desc">AI search with one-line summaries and cleaner citation graphs.</div>
+      </a>
+      <a class="tool-card" href="https://consensus.app/" target="_blank" rel="noopener">
+        <div class="tool-name">Consensus <span class="arrow">↗</span></div>
+        <div class="tool-desc">Synthesizes 200M+ papers into a quick read on where the evidence stands.</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="step" id="s2">
+    <div class="marker">§02</div>
+    <div class="step-head">
+      <h2 class="step-title">Broad literature discovery</h2>
+      <span class="duration">3–7 days</span>
+    </div>
+    <ul class="points">
+      <li>Cast a wide net across the field before narrowing.</li>
+      <li>Explore outward from 2–3 seed papers.</li>
+    </ul>
+    <div class="tool-label">Discovery</div>
+    <div class="tools">
+      <a class="tool-card" href="https://www.researchrabbit.ai/" target="_blank" rel="noopener">
+        <div class="tool-name">ResearchRabbit <span class="arrow">↗</span></div>
+        <div class="tool-desc">Free visual citation maps that grow from your seed papers — built for exploring a field.</div>
+      </a>
+      <a class="tool-card" href="https://www.connectedpapers.com/" target="_blank" rel="noopener">
+        <div class="tool-name">Connected Papers <span class="arrow">↗</span></div>
+        <div class="tool-desc">Interactive graphs of similar and influential papers by citation network.</div>
+      </a>
+      <a class="tool-card" href="https://elicit.com/" target="_blank" rel="noopener">
+        <div class="tool-name">Elicit <span class="arrow">↗</span></div>
+        <div class="tool-desc">Deep, multi-step search for hard-to-find papers a keyword search would miss.</div>
+      </a>
+      <a class="tool-card" href="https://www.ncbi.nlm.nih.gov/" target="_blank" rel="noopener">
+        <div class="tool-name">NCBI / PubMed <span class="arrow">↗</span></div>
+        <div class="tool-desc">Free U.S. government archive of biomedical literature and genomic data.</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="step" id="s3">
+    <div class="marker">§03</div>
+    <div class="step-head">
+      <h2 class="step-title">Deep review &amp; synthesis</h2>
+      <span class="duration">1–3 weeks</span>
+    </div>
+    <ul class="points">
+      <li>Read, extract, and organize key findings by theme.</li>
+      <li>Cross-check that key citations still hold up.</li>
+    </ul>
+    <div class="tool-label">Synthesis</div>
+    <div class="tools">
+      <a class="tool-card" href="https://scispace.com/" target="_blank" rel="noopener">
+        <div class="tool-name">SciSpace <span class="arrow">↗</span></div>
+        <div class="tool-desc">Chat directly with PDFs; summarize and pull data out of 280M+ papers.</div>
+      </a>
+      <a class="tool-card" href="https://elicit.com/" target="_blank" rel="noopener">
+        <div class="tool-name">Elicit <span class="arrow">↗</span></div>
+        <div class="tool-desc">Builds comparison tables of methods, results, and limitations across papers.</div>
+      </a>
+      <a class="tool-card" href="https://scite.ai/" target="_blank" rel="noopener">
+        <div class="tool-name">Scite <span class="arrow">↗</span></div>
+        <div class="tool-desc">Shows whether a paper's claims are actually supported or contradicted elsewhere.</div>
+      </a>
+      <a class="tool-card" href="https://consensus.app/" target="_blank" rel="noopener">
+        <div class="tool-name">Consensus <span class="arrow">↗</span></div>
+        <div class="tool-desc">Maps where the evidence across studies agrees or disagrees.</div>
+      </a>
+      <a class="tool-card" href="https://www.zotero.org/" target="_blank" rel="noopener">
+        <div class="tool-name">Zotero <span class="arrow">↗</span></div>
+        <div class="tool-desc">Free reference manager — folder everything by theme and tag as you go.</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="step" id="s4">
+    <div class="marker">§04</div>
+    <div class="step-head">
+      <h2 class="step-title">Identify the gap</h2>
+    </div>
+    <ul class="points">
+      <li>State plainly: what's known, what's missing, what you'll add.</li>
+      <li>Write it as a one-page research-gap memo.</li>
+    </ul>
+  </section>
+
+  <section class="step" id="s5">
+    <div class="marker">§05</div>
+    <div class="step-head">
+      <h2 class="step-title">Design the methods</h2>
+    </div>
+    <ul class="points">
+      <li>Choose methods, data sources, sample, and analysis plan.</li>
+      <li>Pre-register experimental work; secure ethical approval if required.</li>
+    </ul>
+  </section>
+
+  <section class="step" id="s6">
+    <div class="marker">§06</div>
+    <div class="step-head">
+      <h2 class="step-title">Collect / generate data</h2>
+    </div>
+    <ul class="points">
+      <li>Run experiments, surveys, simulations, or secondary analysis.</li>
+      <li>Keep raw data and scripts organized from day one — future you will look here first.</li>
+    </ul>
+  </section>
+
+  <section class="step" id="s7">
+    <div class="marker">§07</div>
+    <div class="step-head">
+      <h2 class="step-title">Analyze the data</h2>
+    </div>
+    <ul class="points">
+      <li>Clean, analyze, visualize with the right statistical or computational method.</li>
+      <li>Document every analytical decision as you make it.</li>
+    </ul>
+  </section>
+
+  <section class="step" id="s8">
+    <div class="marker">§08</div>
+    <div class="step-head">
+      <h2 class="step-title">Write the first full draft</h2>
+    </div>
+    <ul class="points">
+      <li>Write in this order: Methods → Results → Discussion → Introduction → Abstract &amp; Title last.</li>
+    </ul>
+    <div class="tool-label">Drafting</div>
+    <div class="tools">
+      <a class="tool-card" href="https://scispace.com/" target="_blank" rel="noopener">
+        <div class="tool-name">SciSpace AI Writer <span class="arrow">↗</span></div>
+        <div class="tool-desc">Drafts and polishes academic language section by section.</div>
+      </a>
+      <a class="tool-card" href="https://www.zotero.org/" target="_blank" rel="noopener">
+        <div class="tool-name">Zotero <span class="arrow">↗</span></div>
+        <div class="tool-desc">Insert citations directly from your library — never type a reference by hand.</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="step" id="s9">
+    <div class="marker">§09</div>
+    <div class="step-head">
+      <h2 class="step-title">Self-review &amp; strengthen</h2>
+    </div>
+    <ul class="points">
+      <li>Check that every claim is actually backed by cited evidence.</li>
+      <li>Ask: would a critical reviewer accept this as written?</li>
+    </ul>
+    <div class="tool-label">Verification</div>
+    <div class="tools">
+      <a class="tool-card" href="https://scite.ai/" target="_blank" rel="noopener">
+        <div class="tool-name">Scite <span class="arrow">↗</span></div>
+        <div class="tool-desc">Re-verify that your key citations are solid before anyone else reads this.</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="step" id="s10">
+    <div class="marker">§10</div>
+    <div class="step-head">
+      <h2 class="step-title">Get feedback</h2>
+    </div>
+    <ul class="points">
+      <li>Share with a supervisor, colleagues, or a writing group.</li>
+      <li>Revise on it — this step usually drives the biggest quality jump in the whole process.</li>
+    </ul>
+  </section>
+
+  <section class="step" id="s11">
+    <div class="marker">§11</div>
+    <div class="step-head">
+      <h2 class="step-title">Final polish</h2>
+    </div>
+    <ul class="points">
+      <li>Proofread carefully; pair tools with a human check.</li>
+      <li>Format to the target journal's guidelines; prepare cover letter, highlights, graphical abstract.</li>
+    </ul>
+  </section>
+
+  <section class="step" id="s12">
+    <div class="marker">§12</div>
+    <div class="step-head">
+      <h2 class="step-title">Submit → review → publish</h2>
+    </div>
+    <ul class="points">
+      <li>Pick the journal that matches your scope and impact, not just prestige.</li>
+      <li>Respond to reviewers thoroughly and politely; proof once more after acceptance.</li>
+    </ul>
+    <div class="tool-label">Publishing</div>
+    <div class="tools">
+      <a class="tool-card" href="https://www.elsevier.com/" target="_blank" rel="noopener">
+        <div class="tool-name">Elsevier <span class="arrow">↗</span></div>
+        <div class="tool-desc">Major STM publisher — journals like The Lancet and Cell, plus ScienceDirect and Scopus.</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="note-card">
+    One tool from the original list is left out on purpose: Sci-Hub bypasses publisher paywalls without authorization, which is copyright infringement in most jurisdictions — so it's not included here. For paywalled papers, try your institution's library access, the author's own site, or emailing the author directly for a copy.
+  </div>
+</footer>
+
+<script>
+  const steps = Array.from(document.querySelectorAll('section.step'));
+  const rail = document.getElementById('rail');
+  steps.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', 'Jump to stage ' + (i+1));
+    b.addEventListener('click', () => s.scrollIntoView({behavior:'smooth', block:'center'}));
+    rail.appendChild(b);
+  });
+  const buttons = Array.from(rail.children);
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const idx = steps.indexOf(entry.target);
+      if (entry.isIntersecting) {
+        buttons.forEach(b => b.classList.remove('active'));
+        buttons[idx].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px' });
+  steps.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
